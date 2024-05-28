@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPS Map</title>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/."></script>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    let map;
+    let previousLocation = null;
+    const locations = [];
+    const markers = [];
+    const path = new google.maps.Polyline({
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 37.5665, lng: 126.9780 }, // Center on Seoul by default
+        zoom: 13,
+        mapTypeId: 'satellite'
+      });
+      path.setMap(map);
+      updateMap();
+      setInterval(updateMap, 5000); // Update the map every 5 seconds
+    }
+
+    async function fetchGPSData() {
+      try {
+        const response = await fetch('/ublox_c099_f9p/navpvt');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching GPS data:', error);
+        return null;
+      }
+    }
+
+    async function updateMap() {
+      const data = await fetchGPSData();
+      if (data && data.lat && data.lon) {
+        const lat = data.lat / 10000000; // Assuming lat and lon are in microdegrees
+        const lon = data.lon / 10000000;
+        const newLocation = new google.maps.LatLng(lat, lon);
+
+        // Add new marker and update path
+        const marker = new google.maps.Marker({
+          position: newLocation,
+          map: map,
+          title: `Latitude: ${lat}, Longitude: ${lon}`
+        });
+        markers.push(marker);
+
+        if (previousLocation) {
+          locations.push(previousLocation);
+          locations.push(newLocation);
+        }
+
+        // Update the map center and path
+        map.setCenter(newLocation);
+        path.setPath(locations);
+        previousLocation = newLocation;
+      }
+    }
+
+    window.onload = initMap;
+  </script>
+</body>
+</html>
