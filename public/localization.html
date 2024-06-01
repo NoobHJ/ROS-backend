@@ -3,10 +3,99 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>localization</title>
+    <title>Localization</title>
     <style>
+      body,
+      h1,
+      a,
+      button {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #1a1a1a;
+      }
+
+      .sidebar {
+        width: 180px;
+        background-color: #333;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        padding-left: 10px;
+        position: relative;
+      }
+
+      .logo {
+        width: 160px;
+        height: 160px;
+        cursor: pointer;
+        background-image: url("/assets/sidebar/logo.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        margin-bottom: 20px;
+        animation: rotate 15s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(360deg);
+        }
+        to {
+          transform: rotate(0deg);
+        }
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .menu a {
+        width: 100%;
+        padding: 30px;
+        margin: 5px 0;
+        background-color: transparent;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .menu a:hover {
+        background-color: #555;
+      }
+
+      .menu img {
+        width: 24px;
+        height: 24px;
+      }
+
+      .ulsanlogo {
+        width: 200px;
+        height: 100px;
+        cursor: pointer;
+        background-image: url("/assets/sidebar/ulsanlogo.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        margin-top: 20px;
+      }
+
       #map {
-        height: 85vh;
+        height: 100%;
         width: 50%;
         float: left;
       }
@@ -20,10 +109,12 @@
         clear: both;
       }
       #csvviewer {
-        height: 85vh;
-        width: 50%;
+        font-size: 14px;
+        height: 100vh;
+        width: 100%;
         float: left;
         overflow: auto;
+        background-color: white;
       }
       table {
         width: 100%;
@@ -42,20 +133,39 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=."></script>
   </head>
   <body>
+    <div class="sidebar">
+      <div class="logo"></div>
+      <div class="menu">
+        <a href="./localization.html">
+          <img src="./assets/sidebar/local.svg" alt="icon1" />Localization
+        </a>
+        <a href="./perception.html">
+          <img src="./assets/sidebar/perce.svg" alt="icon2" />Perception
+        </a>
+        <a href="./decision.html">
+          <img src="./assets/sidebar/decis.svg" alt="icon3" />Decision
+        </a>
+        <a href="./control.html">
+          <img src="./assets/sidebar/contr.svg" alt="icon4" />Control
+        </a>
+      </div>
+      <div class="ulsanlogo"></div>
+    </div>
+
     <div id="info">
       <div id="kst_time">KST Time: N/A</div>
       <div id="pDOP">pDOP: N/A</div>
       <div id="numSV">numSV: N/A</div>
+      <div id="csvviewer">
+        <table id="csvtable">
+          <thead>
+            <tr id="csvheader"></tr>
+          </thead>
+          <tbody id="csvbody"></tbody>
+        </table>
+      </div>
     </div>
     <div id="map"></div>
-    <div id="csvviewer">
-      <table id="csvtable">
-        <thead>
-          <tr id="csvheader"></tr>
-        </thead>
-        <tbody id="csvbody"></tbody>
-      </table>
-    </div>
     <script>
       let map;
       let previousLocation = null;
